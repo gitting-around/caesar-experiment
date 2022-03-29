@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   sodipodi:docname="figure-overview.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.77593294"
+     inkscape:cx="347.32383"
+     inkscape:cy="362.1447"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <marker
+       style="overflow:visible;"
+       id="Arrow2Lend"
+       refX="0.0"
+       refY="0.0"
+       orient="auto"
+       inkscape:stockid="Arrow2Lend"
+       inkscape:isstock="true">
+      <path
+         transform="scale(1.1) rotate(180) translate(1,0)"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         style="stroke:context-stroke;fill-rule:evenodd;fill:context-stroke;stroke-width:0.62500000;stroke-linejoin:round;"
+         id="path6323" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Arrow2Lstart"
+       refX="0.0"
+       refY="0.0"
+       orient="auto"
+       inkscape:stockid="Arrow2Lstart"
+       inkscape:isstock="true">
+      <path
+         transform="scale(1.1) translate(1,0)"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         style="stroke:context-stroke;fill-rule:evenodd;fill:context-stroke;stroke-width:0.62500000;stroke-linejoin:round"
+         id="path6320" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Arrow2Lstart-2"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Lstart"
+       inkscape:isstock="true">
+      <path
+         transform="matrix(1.1,0,0,1.1,1.1,0)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:0.625;stroke-linejoin:round"
+         id="path6320-9" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Arrow2Lend-3"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Lend"
+       inkscape:isstock="true">
+      <path
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:0.625;stroke-linejoin:round"
+         id="path6323-1" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ffffff;stroke:none;stroke-width:0.264583;stroke-miterlimit:4;stroke-dasharray:0.264583, 0.264583;stroke-dashoffset:0"
+       id="rect9636"
+       width="163.33296"
+       height="143.89667"
+       x="7.1607347"
+       y="40.918484" />
+    <g
+       id="g9785"
+       transform="translate(-0.61489066,-5.8338847)">
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 73.653271,59.672788 V 117.64064"
+         id="path42"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 131.62112,117.64064 H 73.653271"
+         id="path42-6"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 73.653271,117.64064 H 15.68542"
+         id="path42-6-9"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 73.653271,119.75732 v 57.96785"
+         id="path42-4"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <circle
+         style="fill:#ff0000;fill-rule:evenodd;stroke-width:0.184058"
+         id="path168"
+         cx="73.653267"
+         cy="117.64065"
+         r="2.7278988"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <path
+         sodipodi:type="star"
+         style="fill:#0000ff;fill-rule:evenodd"
+         id="path272"
+         inkscape:flatsided="false"
+         sodipodi:sides="3"
+         sodipodi:cx="108.25678"
+         sodipodi:cy="97.946609"
+         sodipodi:r1="27.186659"
+         sodipodi:r2="13.593329"
+         sodipodi:arg1="1.5707963"
+         sodipodi:arg2="2.6179939"
+         inkscape:rounded="0"
+         inkscape:randomized="0"
+         d="m 108.25678,125.13327 -11.772166,-20.39 -11.772169,-20.389989 23.544335,-10e-7 23.54434,-10e-7 -11.77217,20.389991 z"
+         transform="matrix(0.26458333,0,0,0.26458333,45.010333,69.902411)"
+         inkscape:transform-center-y="1.7982838"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <path
+         sodipodi:type="star"
+         style="fill:#0000ff;fill-rule:evenodd"
+         id="path272-8-0"
+         inkscape:flatsided="false"
+         sodipodi:sides="3"
+         sodipodi:cx="108.25678"
+         sodipodi:cy="97.946609"
+         sodipodi:r1="27.186659"
+         sodipodi:r2="13.593329"
+         sodipodi:arg1="1.5707963"
+         sodipodi:arg2="2.6179939"
+         inkscape:rounded="0"
+         inkscape:randomized="0"
+         transform="matrix(-0.07626687,0.17079546,-0.17079546,-0.07626687,54.768317,91.592432)"
+         inkscape:transform-center-y="1.0367218"
+         d="m 108.25678,125.13327 -11.772166,-20.39 -11.772169,-20.389989 23.544335,-10e-7 23.54434,-10e-7 -11.77217,20.389991 z"
+         inkscape:transform-center-x="0.26301356"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <path
+         sodipodi:type="star"
+         style="fill:#0000ff;fill-rule:evenodd"
+         id="path272-8-0-7"
+         inkscape:flatsided="false"
+         sodipodi:sides="3"
+         sodipodi:cx="108.25678"
+         sodipodi:cy="97.946609"
+         sodipodi:r1="27.186659"
+         sodipodi:r2="13.593329"
+         sodipodi:arg1="1.5707963"
+         sodipodi:arg2="2.6179939"
+         inkscape:rounded="0"
+         inkscape:randomized="0"
+         transform="matrix(-0.08811131,-0.16499734,0.16499734,-0.08811131,67.165246,89.831432)"
+         inkscape:transform-center-y="1.1977254"
+         inkscape:transform-center-x="-0.084170153"
+         d="m 108.25678,125.13327 -11.772166,-20.39 -11.772169,-20.389989 23.544335,-10e-7 23.54434,-10e-7 -11.77217,20.389991 z"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <path
+         sodipodi:type="star"
+         style="fill:#0000ff;fill-rule:evenodd"
+         id="path272-8-0-3"
+         inkscape:flatsided="false"
+         sodipodi:sides="3"
+         sodipodi:cx="108.25678"
+         sodipodi:cy="97.946609"
+         sodipodi:r1="27.186659"
+         sodipodi:r2="13.593329"
+         sodipodi:arg1="1.5707963"
+         sodipodi:arg2="2.6179939"
+         inkscape:rounded="0"
+         inkscape:randomized="0"
+         transform="matrix(-0.07626687,0.17079546,-0.17079546,-0.07626687,109.81312,154.00444)"
+         inkscape:transform-center-y="1.0367218"
+         inkscape:transform-center-x="0.26301356"
+         d="m 108.25678,125.13327 -11.772166,-20.39 -11.772169,-20.389989 23.544335,-10e-7 23.54434,-10e-7 -11.77217,20.389991 z"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <path
+         sodipodi:type="star"
+         style="fill:#0000ff;fill-rule:evenodd"
+         id="path272-4"
+         inkscape:flatsided="false"
+         sodipodi:sides="3"
+         sodipodi:cx="108.25678"
+         sodipodi:cy="97.946609"
+         sodipodi:r1="27.186659"
+         sodipodi:r2="13.593329"
+         sodipodi:arg1="1.5707963"
+         sodipodi:arg2="2.6179939"
+         inkscape:rounded="0"
+         inkscape:randomized="0"
+         transform="matrix(0,0.26458333,-0.26458333,0,123.09644,89.245342)"
+         d="m 108.25678,125.13327 -11.772166,-20.39 -11.772169,-20.389989 23.544335,-10e-7 23.54434,-10e-7 -11.77217,20.389991 z"
+         inkscape:transform-center-x="1.7982821"
+         inkscape:transform-center-y="-2.1764118e-06"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <path
+         style="fill:none;stroke:#ececec;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 73.653271,59.672788 15.68542,117.64064 73.653271,177.72517 131.62112,117.64064 Z"
+         id="path471"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <ellipse
+         style="fill:none;stroke:#000000;stroke-width:0.217358;stroke-miterlimit:4;stroke-dasharray:2.60831, 2.60831;stroke-dashoffset:0"
+         id="path687"
+         cx="82.34845"
+         cy="109.1254"
+         rx="29.177942"
+         ry="21.155304"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 128.55224,89.338691 104.34214,94.4535"
+         id="path1741"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 73.124104,119.22815 -24.2101,5.11481"
+         id="path1741-2"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:5.17303px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.129326"
+         x="146.19046"
+         y="86.209793"
+         id="text2573"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96"><tspan
+           sodipodi:role="line"
+           id="tspan2571"
+           style="text-align:center;text-anchor:middle;stroke-width:0.129326"
+           x="146.19046"
+           y="86.209793">approaching </tspan><tspan
+           sodipodi:role="line"
+           style="text-align:center;text-anchor:middle;stroke-width:0.129326"
+           x="146.19046"
+           y="92.676079"
+           id="tspan3973">the crossroad</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:5.17303px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.129326"
+         x="46.529625"
+         y="129.29102"
+         id="text2573-7"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96"><tspan
+           sodipodi:role="line"
+           style="text-align:center;text-anchor:middle;stroke-width:0.129326"
+           x="46.529625"
+           y="129.29102"
+           id="tspan3973-9">traffic light</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:3.74241px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.0935604"
+         x="137.0396"
+         y="16.463554"
+         id="text2573-7-2"
+         transform="rotate(42.660826)"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96"><tspan
+           sodipodi:role="line"
+           style="text-align:center;text-anchor:middle;stroke-width:0.0935604"
+           x="137.0396"
+           y="16.463554"
+           id="tspan3973-9-1">negoatiation</tspan></text>
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.264583, 0.264583;stroke-dashoffset:0;stroke-opacity:1;marker-start:url(#Arrow2Lstart);marker-end:url(#Arrow2Lend)"
+         d="M 78.938577,98.801091 94.112513,113.97503"
+         id="path6300"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.208856;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.208856, 0.208856;stroke-dashoffset:0;stroke-opacity:1;marker-start:url(#Arrow2Lstart-2);marker-end:url(#Arrow2Lend-3)"
+         d="m 73.579391,117.70943 12.82252,-11.10318"
+         id="path6300-0"
+         inkscape:export-filename="C:\GitHub\caesar-experiment\figure-overview.png"
+         inkscape:export-xdpi="96"
+         inkscape:export-ydpi="96" />
+    </g>
+  </g>
+</svg>
