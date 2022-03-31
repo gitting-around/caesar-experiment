@@ -162,21 +162,80 @@ species intersection skills: [skill_road_node] {
 		do debug ("Roads in " + roads_in);
 		//get list of agents on the roads going toward the intersection
 		list<people> agents_on_roads <- [];
+		map<road, people> agents_on_roads_map <- [];
 		loop r over: roads_in {
-			loop ag over: road(r).all_agents{
-				
-				write "These agents " + ag + " on road" + r;
-				add ag to: agents_on_roads;
+			loop person over: road(r).all_agents{
+				write "These agents " + person + " on road" + r;
+				add people(person) to: agents_on_roads;
+				add road(r)::people(person) to: agents_on_roads_map;
+				write "CHECK " + agents_on_roads_map;
 			}
 			
 		} 
+		
+		//get list of agents close to the intersection from agents_on_roads
+		list<people> agents_close_to_intersection <- [];
 		loop person over: agents_on_roads {
 			do debug("person " + person + " on road" + person.current_road);
 			//do debug("person " + person.location);
 			//do debug("location: " + self.location);
 			float distx <- sqrt((self.location.x - person.location.x)^2 + (self.location.y - person.location.y)^2);
-			do debug("this car is as far from the intersection as: " + distx);
 			
+			if distx <= 10.0#m{
+				do debug("Car close to intersection: " + distx);
+				
+				add person to: agents_close_to_intersection;
+				
+			}
+	
+		}
+		do debug("Cars in negotiation: " + agents_close_to_intersection);
+		
+		//if there are multiple cars close to the intersection, start a negotiation round
+		if length(agents_close_to_intersection) > 1{
+			
+			do debug("NEGOTIATE");
+			
+			//ask each agent whether they have a reason to go first
+			list<int> priority_flag <- [];
+			ask agents_close_to_intersection{
+				
+				add priority_car to: priority_flag;
+				
+			}
+			
+			do debug("Priority: " + priority_flag);
+			
+			//if there is a priority car, change the traffic light to give it priority
+			if priority_flag contains 1{
+				
+				do debug("There is at least one priority car: ");
+				//if there are more than 1, we will open the road for the first one found. So if there is a fake priority
+				//car on one road, and the real priority car on the second one, the real priority car might get stuck
+				//at the light.
+				
+				//find agent index in the list
+				int agent_index <- priority_flag index_of 1;
+				do debug("Index: " + agent_index);
+				
+				//get road
+				road prioritized_road <- agents_on_roads_map index_of agents_close_to_intersection[agent_index];
+				do debug("Road: " + prioritized_road);
+				
+				//turn light green for this road
+				if ways1 contains prioritized_road{
+					do to_green();
+				}
+				else {
+					do to_red();
+				}
+				
+				//TODO keep the lights in this way until the cars in the negotiation have passed the intersection
+				//How can we calculate this??
+				
+				
+			}
+		
 		}
 
 	}
@@ -219,6 +278,7 @@ species people skills: [advanced_driving] {
 	bool breakdown <- false;
 	float proba_breakdown;
 	intersection target;
+	int priority_car <- rnd(1);
 
 	reflex breakdown when: flip(proba_breakdown) {
 		breakdown <- true;
@@ -285,7 +345,7 @@ experiment experiment_city type: gui {
 		create simulation with:[
 			shape_file_roads::file("../includes/RoadCircleLanes.shp"), 
 			shape_file_nodes::file("../includes/NodeCircleLanes.shp"),
-			nb_people::3
+			nb_people::10
 		];
 	}
 	output {
