@@ -162,13 +162,10 @@ species intersection skills: [skill_road_node] {
 		do debug ("Roads in " + roads_in);
 		//get list of agents on the roads going toward the intersection
 		list<people> agents_on_roads <- [];
-		map<road, people> agents_on_roads_map <- [];
 		loop r over: roads_in {
 			loop person over: road(r).all_agents{
 				write "These agents " + person + " on road" + r;
 				add people(person) to: agents_on_roads;
-				add road(r)::people(person) to: agents_on_roads_map;
-				write "CHECK " + agents_on_roads_map;
 			}
 			
 		} 
@@ -219,7 +216,7 @@ species intersection skills: [skill_road_node] {
 				do debug("Index: " + agent_index);
 				
 				//get road
-				road prioritized_road <- agents_on_roads_map index_of agents_close_to_intersection[agent_index];
+				road prioritized_road <- agents_close_to_intersection[agent_index].current_road;
 				do debug("Road: " + prioritized_road);
 				
 				//turn light green for this road
