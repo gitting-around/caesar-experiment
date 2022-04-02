@@ -153,6 +153,10 @@ species intersection skills: [skill_road_node] {
 	reflex dynamic_node when: is_traffic_signal {
 		do debug("New cycle");
 		if !in_negotiation{
+			ask people{
+				color <- default_color;
+			}
+			
 			write ("Roads in " + roads_in);
 			//get list of agents on the roads going toward the intersection
 			list<people> agents_on_roads <- [];
@@ -184,11 +188,18 @@ species intersection skills: [skill_road_node] {
 			}
 			write("Cars in negotiation: " + agents_close_to_intersection);
 			write("Involved roads: " + involved_roads);
+			write("Ways: " + ways1 + " " + ways2);
+			
+			bool two_ways_involved <- false;
+			
+			if ways1 contains_any involved_roads and ways2 contains_any involved_roads{
+				two_ways_involved <- true;
+			}
 			
 			//if there are multiple cars close to the intersection, start a negotiation round
-			//TODO these cars have to be on different roads that go in the intersection
+			//these cars have to be on different roads that go in the intersection, on different ways
 			
-			if length(agents_close_to_intersection) > 1 and length(involved_roads) > 1{
+			if length(agents_close_to_intersection) > 1 and two_ways_involved{
 				
 				write("NEGOTIATE");
 				//ask each agent whether they have a reason to go first
@@ -305,6 +316,7 @@ species intersection skills: [skill_road_node] {
 				status_other_agents <- [];
 				changed <- false;
 				in_negotiation <- false;
+				
 			}
 			
 		}
@@ -342,6 +354,7 @@ species road skills: [skill_road] {
 //People species that will move on the graph of roads to a target and using the driving skill
 species people skills: [advanced_driving] {
 	rgb color <- rnd_color(255);
+	rgb default_color <- color;
 	int counter_stucked <- 0;
 	int threshold_stucked;
 	bool breakdown <- false;
