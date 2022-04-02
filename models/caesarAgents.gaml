@@ -11,7 +11,8 @@ model caesarAgents
 /* Insert your model definition here */
 
 global {
-	bool  display3D<- false;
+	bool in_negotiation <- false;
+	bool  display3D <- false;
 	
 	//Check if we use simple data or more complex roads
 	file shape_file_roads <-  file("../includes/RoadCircleLanes.shp");
@@ -93,6 +94,9 @@ species intersection skills: [skill_road_node] {
 	list<road> ways2;
 	bool is_green;
 	rgb color_fire;
+	list<people> status_priority_agents <- [];
+	list<people> status_other_agents <- [];
+	bool changed <- false;
 
 	action initialize {
 		if (is_traffic_signal) {
@@ -147,94 +151,164 @@ species intersection skills: [skill_road_node] {
 	}
 
 	reflex dynamic_node when: is_traffic_signal {
-		/* 
-		counter <- counter + 1;
-		if (counter >= time_to_change) {
-			counter <- 0;
-			if is_green {
-				do to_red;
-			} else {
-				do to_green;
+		do debug("New cycle");
+		if !in_negotiation{
+			write ("Roads in " + roads_in);
+			//get list of agents on the roads going toward the intersection
+			list<people> agents_on_roads <- [];
+			loop r over: roads_in {
+				loop person over: road(r).all_agents{
+					write "These agents " + person + " on road" + r;
+					add people(person) to: agents_on_roads;
+				}
+				
+			} 
+			
+			//get list of agents close to the intersection from agents_on_roads
+			list<people> agents_close_to_intersection <- [];
+			list<road> involved_roads <- [];
+			loop person over: agents_on_roads {
+				write "person " + person + " on road" + person.current_road;
+				//write("person " + person.location);
+				//write("location: " + self.location);
+				float distx <- sqrt((self.location.x - person.location.x)^2 + (self.location.y - person.location.y)^2);
+				
+				if distx <= 20.0#m{
+					write ("Car close to intersection: " + distx);
+					
+					add person to: agents_close_to_intersection;
+					if ! (involved_roads contains road(person.current_road)){
+						add road(person.current_road) to: involved_roads;
+					}
+				}
 			}
-
-		}*/
+			write("Cars in negotiation: " + agents_close_to_intersection);
+			write("Involved roads: " + involved_roads);
+			
+			//if there are multiple cars close to the intersection, start a negotiation round
+			//TODO these cars have to be on different roads that go in the intersection
+			
+			if length(agents_close_to_intersection) > 1 and length(involved_roads) > 1{
+				
+				write("NEGOTIATE");
+				//ask each agent whether they have a reason to go first
+				list<int> priority_flag <- [];
+				ask agents_close_to_intersection{
+					
+					add priority_car to: priority_flag;
+					
+					previous_road <- road(current_road);
+					
+				}
+				
+				write("Priority: " + priority_flag);
+				
+				//if there is a priority car, change the traffic light to give it priority
+				if priority_flag contains 1{
+					in_negotiation <- true;
+					
+					write("There is at least one priority car: ");
+					//if there are more than 1, we will open the road for the first one found. So if there is a fake priority
+					//car on one road, and the real priority car on the second one, the real priority car might get stuck
+					//at the light.
+					
+					//find agent index in the list
+					int agent_index <- priority_flag index_of 1;
+					write("Index: " + agent_index);
+					
+					//the lists below are used to keep track of agents' statuses
+					status_priority_agents <- [agents_close_to_intersection[agent_index]];
+					loop person over: agents_close_to_intersection{
+						if person != agents_close_to_intersection[agent_index]{
+							add person to: status_other_agents;
+						}
+					}
+					
+					//get road
+					road prioritized_road <- road(agents_close_to_intersection[agent_index].current_road);
+					write("Prioritized Road: " + prioritized_road);
+					write("ways1: " + ways1);
+					write("ways2: " + ways2);
+					
+					//turn light green for this road
+					if ways1 contains prioritized_road{
+						do to_green();
+					}
+					else {
+						do to_red();
+					}
+					
+					write("light state: " + is_green);
+					
+				}//TODO add else here same as the one below
+			
+			}
+			//if not switch the lights based on the counter
+			else {
+				write ("DEFAULT light behaviour");
+				counter <- counter + 1;
+				if (counter >= time_to_change) {
+					counter <- 0;
+					if is_green {
+						do to_red;
+					} else {
+						do to_green;
+					}
 		
-		do debug ("Roads in " + roads_in);
-		//get list of agents on the roads going toward the intersection
-		list<people> agents_on_roads <- [];
-		loop r over: roads_in {
-			loop person over: road(r).all_agents{
-				write "These agents " + person + " on road" + r;
-				add people(person) to: agents_on_roads;
+				}
+			}
+		}
+		else{
+			//Check if priority car has passed the intersection, if yes, switch the light
+			bool has_priority_car_passed <- false;
+			ask status_priority_agents[0]{
+				has_priority_car_passed <- passed_intersection();
 			}
 			
-		} 
-		
-		//get list of agents close to the intersection from agents_on_roads
-		list<people> agents_close_to_intersection <- [];
-		loop person over: agents_on_roads {
-			do debug("person " + person + " on road" + person.current_road);
-			//do debug("person " + person.location);
-			//do debug("location: " + self.location);
-			float distx <- sqrt((self.location.x - person.location.x)^2 + (self.location.y - person.location.y)^2);
-			
-			if distx <= 10.0#m{
-				do debug("Car close to intersection: " + distx);
-				
-				add person to: agents_close_to_intersection;
-				
+			list<bool> has_other_car_passed <- [];
+			//Get status if other cars have passed the intersection
+			ask status_other_agents {
+				add passed_intersection() to: has_other_car_passed;
 			}
+			
+			if has_priority_car_passed and !changed{
+				write("Priority car has passed " + status_priority_agents[0]);
+				changed <- true;
+				//Switch the light
+				if is_green {
+					do to_red;
+				}
+				else{
+					do to_green;
+				}
+				
+				write("light state: " + is_green);
+				ask status_priority_agents[0]{
+					color <- #magenta;
+				}
+			}
+			
+			//if all other cars have passed and priority car has passed, reset everything
+			if ! (has_other_car_passed contains false) and changed{
+				ask status_other_agents{
+					color <- #magenta;
+				}
+				
+				write("All other cars have passed " + status_other_agents);
+				ask status_priority_agents{
+					updated_my_status <- false;
+				}
+				ask status_other_agents{
+					updated_my_status <- false;
+				}
+				status_priority_agents <- [];
+				status_other_agents <- [];
+				changed <- false;
+				in_negotiation <- false;
+			}
+			
+		}
 	
-		}
-		do debug("Cars in negotiation: " + agents_close_to_intersection);
-		
-		//if there are multiple cars close to the intersection, start a negotiation round
-		if length(agents_close_to_intersection) > 1{
-			
-			do debug("NEGOTIATE");
-			
-			//ask each agent whether they have a reason to go first
-			list<int> priority_flag <- [];
-			ask agents_close_to_intersection{
-				
-				add priority_car to: priority_flag;
-				
-			}
-			
-			do debug("Priority: " + priority_flag);
-			
-			//if there is a priority car, change the traffic light to give it priority
-			if priority_flag contains 1{
-				
-				do debug("There is at least one priority car: ");
-				//if there are more than 1, we will open the road for the first one found. So if there is a fake priority
-				//car on one road, and the real priority car on the second one, the real priority car might get stuck
-				//at the light.
-				
-				//find agent index in the list
-				int agent_index <- priority_flag index_of 1;
-				do debug("Index: " + agent_index);
-				
-				//get road
-				road prioritized_road <- agents_close_to_intersection[agent_index].current_road;
-				do debug("Road: " + prioritized_road);
-				
-				//turn light green for this road
-				if ways1 contains prioritized_road{
-					do to_green();
-				}
-				else {
-					do to_red();
-				}
-				
-				//TODO keep the lights in this way until the cars in the negotiation have passed the intersection
-				//How can we calculate this??
-				
-				
-			}
-		
-		}
-
 	}
 
 	aspect default {
@@ -262,9 +336,7 @@ species road skills: [skill_road] {
 		} else {
 			draw shape color: #white end_arrow: 5;
 		}
-		
 	}
-
 }
 
 //People species that will move on the graph of roads to a target and using the driving skill
@@ -276,6 +348,9 @@ species people skills: [advanced_driving] {
 	float proba_breakdown;
 	intersection target;
 	int priority_car <- rnd(1);
+	road previous_road <- nil;
+	bool updated_my_status <- false;
+	list proba_respect_stops <- [1.0];
 
 	reflex breakdown when: flip(proba_breakdown) {
 		breakdown <- true;
@@ -292,7 +367,7 @@ species people skills: [advanced_driving] {
 
 	reflex move when: current_path != nil and final_target != nil {
 		do drive;
-		if (final_target != nil) {
+		/*if (final_target != nil) {
 			if real_speed < 5 #km / #h {
 				counter_stucked <- counter_stucked + 1;
 				if (counter_stucked mod threshold_stucked = 0) {
@@ -303,7 +378,18 @@ species people skills: [advanced_driving] {
 				counter_stucked <- 0;
 				proba_use_linked_road <- 0.0;
 			}
+		}*/
+	}
+	
+	bool passed_intersection {
+
+		if current_road != previous_road or updated_my_status{
+			previous_road <- road(current_road);
+			updated_my_status <- true;
+			return true;
 		}
+		return false;
+
 	}
 
 	aspect default {
