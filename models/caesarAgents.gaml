@@ -90,11 +90,12 @@ global {
 		ask intersection[1] {
 			inter1 <- location;
 		}
-		
+				
 		
 		ask people[0] {
 			default_color <- #green;
 			color <- #green;
+			init_target <- 4;
 			//init_target <- road
 			//location <- intersections[5];	
 		}
@@ -102,7 +103,8 @@ global {
 		ask people[1] {
 			default_color <- #green;
 			color <- #green;
-			location <- inter1;	
+			location <- inter1;
+			init_target <- 4;	
 		}
 		
 
@@ -416,7 +418,7 @@ species people skills: [advanced_driving] {
 	road previous_road <- nil;
 	bool updated_my_status <- false;
 	list proba_respect_stops <- [1.0];
-	intersection init_target <- nil;
+	int init_target <- -1;
 
 	reflex breakdown when: flip(proba_breakdown) {
 		breakdown <- true;
@@ -424,7 +426,12 @@ species people skills: [advanced_driving] {
 	}
 
 	reflex time_to_go when: final_target = nil {
-		target <- one_of(intersection );
+		if init_target > -1 {
+			target <- intersection[init_target]; //one_of(intersection );
+		} else {
+			target <- one_of(intersection );
+			init_target <- -1;
+		}
 		current_path <- compute_path(graph: road_network, target: target);
 		if (current_path = nil) {
 			location <- one_of(intersection).location;
@@ -495,7 +502,7 @@ experiment experiment_city type: gui {
 		create simulation with:[
 			shape_file_roads::file("../includes/RoadCircleLanes.shp"), 
 			shape_file_nodes::file("../includes/NodeCircleLanes.shp"),
-			nb_people::8
+			nb_people::3
 		];
 	}
 	output {
