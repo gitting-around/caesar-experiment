@@ -419,13 +419,26 @@ species people skills: [advanced_driving] {
 	bool updated_my_status <- false;
 	list proba_respect_stops <- [1.0];
 	int init_target <- -1;
-
+	int time_start <- 0;
+	int time_end;
+    
+    action log_duration(string txt) {
+		 string msg <- txt;
+		 write(msg);
+		 save ("" + msg) 
+      	 to: "results-people.txt" type: "text" rewrite: false;
+	}
+	
 	reflex breakdown when: flip(proba_breakdown) {
 		breakdown <- true;
 		max_speed <- 1 #km / #h;
 	}
 
 	reflex time_to_go when: final_target = nil {
+		time_end <- cycle;
+		do log_duration("time:" + (time_end - time_start) + " priority:" + priority_car);
+		time_start <- cycle;
+				
 		if init_target > -1 {
 			target <- intersection[init_target]; //one_of(intersection );
 		} else {
@@ -502,7 +515,7 @@ experiment experiment_city type: gui {
 		create simulation with:[
 			shape_file_roads::file("../includes/RoadCircleLanes.shp"), 
 			shape_file_nodes::file("../includes/NodeCircleLanes.shp"),
-			nb_people::3
+			nb_people::5
 		];
 	}
 	output {
