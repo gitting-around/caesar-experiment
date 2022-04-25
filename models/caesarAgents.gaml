@@ -14,12 +14,16 @@ global {
 	bool in_negotiation <- false;
 	bool  display3D <- false;
 	
+	bool lying <- false;
+	
 	//Check if we use simple data or more complex roads
 	file shape_file_roads <-  file("../includes/RoadCircleLanes.shp");
 	file shape_file_nodes <- file("../includes/NodeCircleLanes.shp");
 	geometry shape <- envelope(shape_file_roads) + 50.0;
 	graph road_network;
 	int nb_people <- 200;
+	float ratio_liars <- 0.2;
+	float lying_prob <- 1.0;
 
 	init {
 	//create the intersection and check if there are traffic lights or not by looking the values inside the type column of the shapefile and linking
@@ -79,6 +83,51 @@ global {
 			threshold_stucked <- int((1 + rnd(5)) #mn);
 			proba_breakdown <- 0.00001;
 		}
+
+		if lying{
+			//make some agents liars
+			int nr_liars <- nb_people * ratio_liars;
+			write "LIARS: " + nr_liars;
+			
+			list<int> liar_agents <- []; //people index
+			loop while: nr_liars > 0{
+				
+				ask one_of(people){
+					if !lying_capability and ! (priority_car = 1){
+						lying_capability <- true;
+						nr_liars <- nr_liars - 1;
+					}
+				}
+			}
+		}
+		
+		point inter0;
+		point inter1;
+		 
+		ask intersection[0] {
+			inter0 <- location;
+		}
+		
+		ask intersection[1] {
+			inter1 <- location;
+		}
+				
+		
+		ask people[0] {
+			default_color <- #green;
+			color <- #green;
+			init_target <- 4;
+			//init_target <- road
+			//location <- intersections[5];	
+		}
+		
+		ask people[1] {
+			default_color <- #green;
+			color <- #green;
+			location <- inter1;
+			init_target <- 4;	
+		}
+		
 
 	}
 
@@ -149,35 +198,61 @@ species intersection skills: [skill_road_node] {
 		color_fire <- #red;
 		is_green <- false;
 	}
-
+	
+	action logme(string prefix, string txt) {
+		 string msg <- prefix + ": "+ txt;
+		 write(msg);
+		 save ("" + cycle + msg) 
+      	 to: "results.txt" type: "text" rewrite: false;
+	}
+	
+	
+	list<people> get_agents_on_roads {
+		list<people> agents_on_roads <- [];
+		loop r over: roads_in {
+			loop person over: road(r).all_agents{
+				write "These agents " + person + " on road" + r;
+				add people(person) to: agents_on_roads;
+			}
+				
+		}
+		return agents_on_roads;
+	}
+	
+	
 	reflex dynamic_node when: is_traffic_signal {
-		do debug("New cycle");
+		do logme("", "----------- New cycle -----------");
+		 
+		ask people {
+			color <- default_color;
+		}
+		
+			
 		if !in_negotiation{
-			ask people{
-				color <- default_color;
+			do logme("", "!in_negotation");
+			
+			ask people {
+				color <- #black;
 			}
 			
+			
+			
 			write ("Roads in " + roads_in);
+			do logme("", "Roads in: " + roads_in);
+			
 			//get list of agents on the roads going toward the intersection
-			list<people> agents_on_roads <- [];
-			loop r over: roads_in {
-				loop person over: road(r).all_agents{
-					write "These agents " + person + " on road" + r;
-					add people(person) to: agents_on_roads;
-				}
-				
-			} 
+			list<people> agents_on_roads <- get_agents_on_roads();
+			do logme("", "Agents_on_roads: " + agents_on_roads);
+			
 			
 			//get list of agents close to the intersection from agents_on_roads
 			list<people> agents_close_to_intersection <- [];
 			list<road> involved_roads <- [];
 			loop person over: agents_on_roads {
-				write "person " + person + " on road" + person.current_road;
-				//write("person " + person.location);
-				//write("location: " + self.location);
-				float distx <- sqrt((self.location.x - person.location.x)^2 + (self.location.y - person.location.y)^2);
 				
-				if distx <= 20.0#m{
+				float distx <- sqrt((self.location.x - person.location.x)^2 + (self.location.y - person.location.y)^2);
+				do logme("", "\tperson " + person + " on road" + person.current_road + " dist: " +distx);
+				if distx <= 30.0#m and distx > 0.1#m {
 					write ("Car close to intersection: " + distx);
 					
 					add person to: agents_close_to_intersection;
@@ -186,34 +261,30 @@ species intersection skills: [skill_road_node] {
 					}
 				}
 			}
-			write("Cars in negotiation: " + agents_close_to_intersection);
-			write("Involved roads: " + involved_roads);
-			write("Ways: " + ways1 + " " + ways2);
 			
-			bool two_ways_involved <- false;
 			
-			if ways1 contains_any involved_roads and ways2 contains_any involved_roads{
-				two_ways_involved <- true;
-			}
+			do logme("", "agents_close_to_intersections: " + agents_close_to_intersection);
+			do logme("", "involved_roads: " + involved_roads);
+			do logme("", "Ways: " + ways1 + " " + ways2);
+			
 			
 			//if there are multiple cars close to the intersection, start a negotiation round
 			//these cars have to be on different roads that go in the intersection, on different ways
-			
-			if length(agents_close_to_intersection) > 1 and two_ways_involved{
+			if length(agents_close_to_intersection) > 1 and 
+				(ways1 contains_any involved_roads and ways2 contains_any involved_roads) { // two ways involved 
 				
-				write("NEGOTIATE");
+				do logme("", "Negotiation");
+				
 				//ask each agent whether they have a reason to go first
 				list<int> priority_flag <- [];
-				ask agents_close_to_intersection{
-					
-					add priority_car to: priority_flag;
-					
+				ask agents_close_to_intersection {
+					//add priority_car to: priority_flag;
+					add broadcast_priority() to: priority_flag;
+					color <- #red;
 					previous_road <- road(current_road);
-					
 				}
 				
-				write("Priority: " + priority_flag);
-				
+				do logme("", "priorit: "+ priority_flag);
 				//if there is a priority car, change the traffic light to give it priority
 				if priority_flag contains 1{
 					in_negotiation <- true;
@@ -269,7 +340,9 @@ species intersection skills: [skill_road_node] {
 				}
 			}
 		}
-		else{
+		else{ // in negotation
+			do logme("", "IN in_negotation");
+			
 			//Check if priority car has passed the intersection, if yes, switch the light
 			bool has_priority_car_passed <- false;
 			ask status_priority_agents[0]{
@@ -282,9 +355,14 @@ species intersection skills: [skill_road_node] {
 				add passed_intersection() to: has_other_car_passed;
 			}
 			
-			if has_priority_car_passed and !changed{
+			
+			do logme("", "has_priority_car_passed: " + has_priority_car_passed + " has_other_car_passed: "+ has_other_car_passed );
+			
+			
+			if has_priority_car_passed and !changed {
 				write("Priority car has passed " + status_priority_agents[0]);
 				changed <- true;
+				
 				//Switch the light
 				if is_green {
 					do to_red;
@@ -300,7 +378,7 @@ species intersection skills: [skill_road_node] {
 			}
 			
 			//if all other cars have passed and priority car has passed, reset everything
-			if ! (has_other_car_passed contains false) and changed{
+			if ! (has_other_car_passed contains false) and changed {
 				ask status_other_agents{
 					color <- #magenta;
 				}
@@ -316,11 +394,8 @@ species intersection skills: [skill_road_node] {
 				status_other_agents <- [];
 				changed <- false;
 				in_negotiation <- false;
-				
 			}
-			
 		}
-	
 	}
 
 	aspect default {
@@ -328,6 +403,7 @@ species intersection skills: [skill_road_node] {
 			if (is_traffic_signal) {
 				draw box(1, 1, 10) color: #black;
 				draw sphere(3) at: {location.x, location.y, 10} color: color_fire;
+				
 			}
 		} else {
 			if (is_traffic_signal) {
@@ -353,7 +429,7 @@ species road skills: [skill_road] {
 
 //People species that will move on the graph of roads to a target and using the driving skill
 species people skills: [advanced_driving] {
-	rgb color <- rnd_color(255);
+	rgb color <- #gray;
 	rgb default_color <- color;
 	int counter_stucked <- 0;
 	int threshold_stucked;
@@ -361,17 +437,37 @@ species people skills: [advanced_driving] {
 	float proba_breakdown;
 	intersection target;
 	int priority_car <- rnd(1);
+	bool lying_capability <- false;
 	road previous_road <- nil;
 	bool updated_my_status <- false;
 	list proba_respect_stops <- [1.0];
-
+	int init_target <- -1;
+	int time_start <- 0;
+	int time_end;
+    
+    action log_duration(string txt) {
+		 string msg <- txt;
+		 write(msg);
+		 save ("" + msg) 
+      	 to: "results-people-"+seed+"-"+lying+".txt" type: "text" rewrite: false;
+	}
+	
 	reflex breakdown when: flip(proba_breakdown) {
 		breakdown <- true;
 		max_speed <- 1 #km / #h;
 	}
 
 	reflex time_to_go when: final_target = nil {
-		target <- one_of(intersection );
+		time_end <- cycle;
+		do log_duration("time:" + (time_end - time_start) + " priority:" + priority_car + " lying: " + lying_capability + " agent: " + name);
+		time_start <- cycle;
+				
+		if init_target > -1 {
+			target <- intersection[init_target]; //one_of(intersection );
+		} else {
+			target <- one_of(intersection );
+			init_target <- -1;
+		}
 		current_path <- compute_path(graph: road_network, target: target);
 		if (current_path = nil) {
 			location <- one_of(intersection).location;
@@ -394,6 +490,21 @@ species people skills: [advanced_driving] {
 		}*/
 	}
 	
+	int broadcast_priority {
+		if !lying_capability{
+			return priority_car;
+		}
+		else{
+			if rnd(1.0) < lying_prob {
+				return 1;
+			}
+			else{
+				return priority_car;
+			}
+			
+		}
+	}
+	
 	bool passed_intersection {
 
 		if current_road != previous_road or updated_my_status{
@@ -414,6 +525,7 @@ species people skills: [advanced_driving] {
 			}
 		}else {
 			draw breakdown ? square(8) : triangle(8) color: color rotate: heading + 90;
+			//draw string("x"+name+"x") at: {location.x, location.y, 10} color: #white;
 		}
 		
 	}
@@ -441,7 +553,7 @@ experiment experiment_city type: gui {
 		create simulation with:[
 			shape_file_roads::file("../includes/RoadCircleLanes.shp"), 
 			shape_file_nodes::file("../includes/NodeCircleLanes.shp"),
-			nb_people::10
+			nb_people::5
 		];
 	}
 	output {
@@ -452,4 +564,12 @@ experiment experiment_city type: gui {
 		}
 	}
 
+}
+
+experiment batch_sim type: batch repeat: 5 keep_seed: true until: (cycle = 50){
+	parameter "Lying: " var: lying among: [false, true];
+	parameter "Nr of people" var: nb_people among: [5];
+	parameter "Ratio of liers in the population" var: ratio_liars among: [0.2];
+	parameter "Prob of lying" var: lying_prob among: [1.0];
+	
 }
