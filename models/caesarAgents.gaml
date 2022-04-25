@@ -83,6 +83,34 @@ global {
 			threshold_stucked <- int((1 + rnd(5)) #mn);
 			proba_breakdown <- 0.00001;
 		}
+		
+		point inter0;
+		point inter1;
+		 
+		ask intersection[0] {
+			inter0 <- location;
+		}
+		
+		ask intersection[1] {
+			inter1 <- location;
+		}
+				
+		
+		ask people[0] {
+			default_color <- #green;
+			color <- #green;
+			init_target <- 4;
+			//init_target <- road
+			//location <- intersections[5];	
+		}
+		
+		ask people[1] {
+			default_color <- #green;
+			color <- #green;
+			location <- inter1;
+			init_target <- 4;	
+		}
+		
 
 		if lying{
 			//make some agents liars
@@ -280,6 +308,7 @@ species intersection skills: [skill_road_node] {
 				ask agents_close_to_intersection {
 					//add priority_car to: priority_flag;
 					add broadcast_priority() to: priority_flag;
+
 					color <- #red;
 					previous_road <- road(current_road);
 				}
@@ -449,7 +478,9 @@ species people skills: [advanced_driving] {
 		 string msg <- txt;
 		 write(msg);
 		 save ("" + msg) 
+
       	 to: "results-people-"+seed+"-"+lying+".txt" type: "text" rewrite: false;
+
 	}
 	
 	reflex breakdown when: flip(proba_breakdown) {
@@ -459,7 +490,9 @@ species people skills: [advanced_driving] {
 
 	reflex time_to_go when: final_target = nil {
 		time_end <- cycle;
+
 		do log_duration("time:" + (time_end - time_start) + " priority:" + priority_car + " lying: " + lying_capability + " agent: " + name);
+
 		time_start <- cycle;
 				
 		if init_target > -1 {
