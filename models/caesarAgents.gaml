@@ -170,9 +170,16 @@ global {
 	}
 
 	reflex check_if_end{
-		int nr_dead <- 0;
+		int nr_done <- 0;
 		
-		if length(people.population) < 1{
+		ask people{
+			if arrived{
+				nr_done <- nr_done + 1;
+			}
+		}
+		
+		if nr_done = nb_people{
+			stop <- true;
 			do die;
 		}
 		
@@ -503,11 +510,6 @@ species people skills: [advanced_driving] {
 
 	}
 	
-	reflex exit when: arrived{
-		write "Agent " + name + " DIED";
-		do die;
-	}
-	
 	reflex breakdown when: flip(proba_breakdown) {
 		breakdown <- true;
 		max_speed <- 1 #km / #h;
@@ -515,10 +517,9 @@ species people skills: [advanced_driving] {
 
 	reflex time_to_go when: final_target = nil{
 		time_end <- cycle;
-
-		do log_duration("time:" + (time_end - time_start) + " priority:" + priority_car + " lying:" + lying_capability + " agent:" + name);
 		
-		if cycle > 1{
+		if !arrived and cycle > 1{
+			do log_duration("time:" + (time_end - time_start) + " priority:" + priority_car + " lying:" + lying_capability + " agent:" + name);
 			arrived <- true;
 		}
 		
@@ -628,7 +629,7 @@ experiment experiment_city type: gui {
 
 }
 
-experiment batch_sim type: batch repeat: 1 keep_seed: true until: length(people.population) < 1{
+experiment batch_sim type: batch repeat: 1 keep_seed: true until: stop{
 	parameter "Lying: " var: lying among: [false, true];
 	parameter "Priority: " var: priority among: [false, true];
 	parameter "Nr of people" var: nb_people among: [5];
