@@ -16,6 +16,8 @@ global {
 	
 	bool lying <- false;
 	
+	bool priority <- false;
+	
 	//Check if we use simple data or more complex roads
 	file shape_file_roads <-  file("../includes/RoadCircleLanes.shp");
 	file shape_file_nodes <- file("../includes/NodeCircleLanes.shp");
@@ -24,6 +26,8 @@ global {
 	int nb_people <- 200;
 	float ratio_liars <- 0.2;
 	float lying_prob <- 1.0;
+	
+	bool stop <- false;
 
 	init {
 	//create the intersection and check if there are traffic lights or not by looking the values inside the type column of the shapefile and linking
@@ -110,8 +114,14 @@ global {
 			location <- inter1;
 			init_target <- 4;	
 		}
-		
 
+		
+		if priority {
+			ask one_of(people){
+				priority_car <- 1;
+			}
+		}
+		
 		if lying{
 			//make some agents liars
 			int nr_liars <- nb_people * ratio_liars;
@@ -159,6 +169,14 @@ global {
 
 	}
 
+	reflex check_if_end{
+		int nr_dead <- 0;
+		
+		if length(people.population) < 1{
+			do die;
+		}
+		
+	}
 }
 
 //species that will represent the intersection node, it can be traffic lights or not, using the skill_road_node skill
@@ -465,7 +483,7 @@ species people skills: [advanced_driving] {
 	bool breakdown <- false;
 	float proba_breakdown;
 	intersection target;
-	int priority_car <- rnd(1);
+	int priority_car <- 0;
 	bool lying_capability <- false;
 	road previous_road <- nil;
 	bool updated_my_status <- false;
@@ -473,14 +491,21 @@ species people skills: [advanced_driving] {
 	int init_target <- -1;
 	int time_start <- 0;
 	int time_end;
+	
+	bool arrived <- false;
     
     action log_duration(string txt) {
 		 string msg <- txt;
 		 write(msg);
 		 save ("" + msg) 
 
-      	 to: "results-people-"+seed+"-"+lying+".txt" type: "text" rewrite: false;
+      	 to: "results-people-seed"+seed+"-lying"+lying +"-priority"+priority+".txt" type: "text" rewrite: false;
 
+	}
+	
+	reflex exit when: arrived{
+		write "Agent " + name + " DIED";
+		do die;
 	}
 	
 	reflex breakdown when: flip(proba_breakdown) {
@@ -488,11 +513,15 @@ species people skills: [advanced_driving] {
 		max_speed <- 1 #km / #h;
 	}
 
-	reflex time_to_go when: final_target = nil {
+	reflex time_to_go when: final_target = nil{
 		time_end <- cycle;
 
-		do log_duration("time:" + (time_end - time_start) + " priority:" + priority_car + " lying: " + lying_capability + " agent: " + name);
-
+		do log_duration("time:" + (time_end - time_start) + " priority:" + priority_car + " lying:" + lying_capability + " agent:" + name);
+		
+		if cycle > 1{
+			arrived <- true;
+		}
+		
 		time_start <- cycle;
 				
 		if init_target > -1 {
@@ -599,8 +628,9 @@ experiment experiment_city type: gui {
 
 }
 
-experiment batch_sim type: batch repeat: 5 keep_seed: true until: (cycle = 50){
+experiment batch_sim type: batch repeat: 1 keep_seed: true until: length(people.population) < 1{
 	parameter "Lying: " var: lying among: [false, true];
+	parameter "Priority: " var: priority among: [false, true];
 	parameter "Nr of people" var: nb_people among: [5];
 	parameter "Ratio of liers in the population" var: ratio_liars among: [0.2];
 	parameter "Prob of lying" var: lying_prob among: [1.0];
