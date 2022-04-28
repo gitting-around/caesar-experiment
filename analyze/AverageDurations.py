@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from distutils.util import strtobool
-
+ 
 def load(filename):
     database = []
     f = open(filename)
