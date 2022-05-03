@@ -1,13 +1,13 @@
+import matplotlib
 import matplotlib.pyplot as plt
 from os.path import abspath
 
 dir = abspath("../models")
 print(dir)
-
 suffix = ["lyingfalse-priorityfalse", "lyingfalse-prioritytrue", "lyingtrue-priorityfalse", "lyingtrue-prioritytrue"]
 prefix = "/results-people-seed"
 max_value= 0
-
+fig=plt.figure()
 
 def load(filename):
     database = []
@@ -57,8 +57,8 @@ def draw_sublpt(agent_detail, pos):
     plt.xticks(x, labels, rotation='vertical')
     ax = plt.gca()
     ax.set_ylim([0, max_value])
-
     bar = plt.bar(x, y, color=colors)
+
 
 
 def draw(database, seed):
@@ -66,9 +66,11 @@ def draw(database, seed):
     for i, dataset in enumerate(database):
         draw_sublpt(dataset, i+1)
 
-    plt.savefig(f"overview_seed{seed}.png")
+    fig.savefig(f"overview_seed{seed}.png")
 
 def analyze(seed):
+    global fig
+    fig=plt.figure()
     global max_value
     database = []
     for suf in suffix:
@@ -78,6 +80,12 @@ def analyze(seed):
     max_value = int(find_max_value(database) * 1.1)
     draw(database, seed)
 
-analyze("3.2349512586278953E18")
-analyze("5.5180944214829394E18")
-analyze("8.8271048935955036E18")
+analyze("1.77201837092414874E18")
+max_value= 0
+analyze("2.6920604224881746E18")
+max_value= 0
+analyze("3.5985416596369879E18")
+max_value= 0
+analyze("6.1859976755268362E18")
+max_value= 0
+analyze("8.3864456404848896E18")

@@ -14,7 +14,7 @@ global {
 	bool in_negotiation <- false;
 	bool  display3D <- false;
 	
-	bool lying <- false;
+	bool lying <- true;
 	
 	bool priority <- false;
 	
@@ -27,11 +27,14 @@ global {
 	float ratio_liars <- 0.2;
 	float lying_prob <- 1.0;
 	
+	int number_of_negotiations <- 0;
+	
 	bool stop <- false;
 
 	init {
 	//create the intersection and check if there are traffic lights or not by looking the values inside the type column of the shapefile and linking
 	// this column to the attribute is_traffic_signal. 
+		save (seed) to: "seeds.txt" type: "text" rewrite: false;
 		create intersection from: shape_file_nodes with: [is_traffic_signal::(read("type") = "traffic_signals")];
 
 		//create road agents using the shapefile and using the oneway column to check the orientation of the roads if there are directed
@@ -116,28 +119,76 @@ global {
 		}
 
 		
+		int nr_liars <- nb_people * ratio_liars;
+		people supposed_priority <- nil;
+		write people;
+		
 		if priority {
-			ask one_of(people){
+			/* 
+			supposed_priority <- one_of(people);
+			ask supposed_priority{
+				priority_car <- 1;
+				
+			}
+			loop t over: range(nr_liars-1){
+				int rando <- rnd(1);
+				write "calling rand";
+			}
+			write "calling rand";
+			*/
+			
+			ask people(0){
 				priority_car <- 1;
 			}
-		}
+		}/*
+		else{
+			
+			supposed_priority <- one_of(people);
+			write "calling rand";
+			//call random number generator to make sure the rng_usage is the same between runs with priority true and false
+			loop t over: range(nr_liars-1){
+				int rando <- rnd(1);
+				write "calling rand";
+			}
+		}*/
+			
 		
 		if lying{
 			//make some agents liars
-			int nr_liars <- nb_people * ratio_liars;
+			/*
 			write "LIARS: " + nr_liars;
 			
-			list<int> liar_agents <- []; //people index
-			loop while: nr_liars > 0{
-				
-				ask one_of(people){
-					if !lying_capability and ! (priority_car = 1){
-						lying_capability <- true;
-						nr_liars <- nr_liars - 1;
-					}
+			list<people> liar_agents <- []; //people index
+			
+			ask people{
+				if !lying_capability and !(self = supposed_priority){
+					add self to: liar_agents;
 				}
 			}
-		}
+			write liar_agents;
+			loop while: nr_liars > 0{
+				
+				ask one_of(liar_agents){
+						lying_capability <- true;
+						nr_liars <- nr_liars - 1;
+				}
+			
+				write "calling rand";
+			}*/
+			ask people(1){
+				lying_capability <- true;
+			}
+		}/*
+		else{
+			//call random number generator to make sure the rng_usage is the same between runs with lying true and false
+			loop t over: range(nr_liars-1){
+				int rando <- rnd(1);
+				
+				write "calling rand";
+			}
+		}*/
+		
+		//Reset seed as it gets thrown off depending on whether we go into the ifs above
 		
 		point inter0;
 		point inter1;
@@ -343,6 +394,8 @@ species intersection skills: [skill_road_node] {
 				if priority_flag contains 1{
 					in_negotiation <- true;
 					
+					number_of_negotiations <- number_of_negotiations + 1;
+					
 					write("There is at least one priority car: ");
 					//if there are more than 1, we will open the road for the first one found. So if there is a fake priority
 					//car on one road, and the real priority car on the second one, the real priority car might get stuck
@@ -432,12 +485,13 @@ species intersection skills: [skill_road_node] {
 			}
 			
 			//if all other cars have passed and priority car has passed, reset everything
-			if ! (has_other_car_passed contains false) and changed {
+			//if ! (has_other_car_passed contains false) and changed {
 				ask status_other_agents{
-					color <- #magenta;
+					//color <- #magenta;
 				}
 				
-				write("All other cars have passed " + status_other_agents);
+				//write("All other cars have passed " + status_other_agents);
+				write("switching to other " + status_other_agents);
 				ask status_priority_agents{
 					updated_my_status <- false;
 				}
@@ -448,7 +502,7 @@ species intersection skills: [skill_road_node] {
 				status_other_agents <- [];
 				changed <- false;
 				in_negotiation <- false;
-			}
+			//}
 		}
 	}
 
@@ -457,12 +511,13 @@ species intersection skills: [skill_road_node] {
 			if (is_traffic_signal) {
 				draw box(1, 1, 10) color: #black;
 				draw sphere(3) at: {location.x, location.y, 10} color: color_fire;
-				
 			}
 		} else {
 			if (is_traffic_signal) {
 				draw circle(5) color: color_fire;
 			}
+			
+			draw name color: #white;
 		}	
 	}
 }
@@ -483,7 +538,7 @@ species road skills: [skill_road] {
 
 //People species that will move on the graph of roads to a target and using the driving skill
 species people skills: [advanced_driving] {
-	rgb color <- #gray;
+	rgb color <- #grey;
 	rgb default_color <- color;
 	int counter_stucked <- 0;
 	int threshold_stucked;
@@ -529,6 +584,7 @@ species people skills: [advanced_driving] {
 			target <- intersection[init_target]; //one_of(intersection );
 		} else {
 			target <- one_of(intersection );
+			write "agent " + name + " destination " + target;
 			init_target <- -1;
 		}
 		current_path <- compute_path(graph: road_network, target: target);
@@ -558,12 +614,12 @@ species people skills: [advanced_driving] {
 			return priority_car;
 		}
 		else{
-			if rnd(1.0) < lying_prob {
+			//if rnd(1.0) < lying_prob {
 				return 1;
-			}
-			else{
-				return priority_car;
-			}
+			//}
+			//else{
+			//	return priority_car;
+			//}
 			
 		}
 	}
@@ -588,7 +644,15 @@ species people skills: [advanced_driving] {
 			}
 		}else {
 			draw breakdown ? square(8) : triangle(8) color: color rotate: heading + 90;
-			//draw string("x"+name+"x") at: {location.x, location.y, 10} color: #white;
+			if lying_capability{
+				draw string("-"+name+"-") at: {location.x+0.2, location.y, 10} color: #red;
+			}
+			else if priority_car = 1{
+				draw string("-"+name+"-") at: {location.x+0.2, location.y, 10} color: #green;
+			}
+			else{
+				draw string("-"+name+"-") at: {location.x+0.2, location.y, 10} color: #white;
+			}
 		}
 		
 	}
@@ -611,6 +675,7 @@ species people skills: [advanced_driving] {
 
 experiment experiment_city type: gui {
 	parameter "if true, 3D display, if false 2D display:" var: display3D category: "GIS";
+	float seed <- 2.5166418704550881E18;
 	
 	action _init_{
 		create simulation with:[
@@ -625,11 +690,12 @@ experiment experiment_city type: gui {
 			species intersection ;
 			species people ;
 		}
+		monitor "Nr of negotiations" value: number_of_negotiations refresh_every: 5;  
 	}
 
 }
 
-experiment batch_sim type: batch repeat: 1 keep_seed: true until: stop{
+experiment batch_sim type: batch repeat: 5 keep_seed: true until: stop{
 	parameter "Lying: " var: lying among: [false, true];
 	parameter "Priority: " var: priority among: [false, true];
 	parameter "Nr of people" var: nb_people among: [5];
