@@ -1,0 +1,5 @@
+time:12 priority:0 lying:false agent:people0
+time:12 priority:0 lying:false agent:people3
+time:13 priority:0 lying:false agent:people4
+time:25 priority:0 lying:false agent:people1
+time:33 priority:0 lying:false agent:people2

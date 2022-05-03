@@ -34,7 +34,7 @@ global {
 	init {
 	//create the intersection and check if there are traffic lights or not by looking the values inside the type column of the shapefile and linking
 	// this column to the attribute is_traffic_signal. 
-		save (seed) to: "seeds.txt" type: "text" rewrite: false;
+		save ("analyze\""+seed+"\")") to: "seeds.txt" type: "text" rewrite: false;
 		create intersection from: shape_file_nodes with: [is_traffic_signal::(read("type") = "traffic_signals")];
 
 		//create road agents using the shapefile and using the oneway column to check the orientation of the roads if there are directed
@@ -695,7 +695,7 @@ experiment experiment_city type: gui {
 
 }
 
-experiment batch_sim type: batch repeat: 5 keep_seed: true until: stop{
+experiment batch_sim type: batch repeat: 10 keep_seed: true until: stop{
 	parameter "Lying: " var: lying among: [false, true];
 	parameter "Priority: " var: priority among: [false, true];
 	parameter "Nr of people" var: nb_people among: [5];
