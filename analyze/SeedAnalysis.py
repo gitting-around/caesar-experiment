@@ -1,9 +1,11 @@
 import matplotlib.pyplot as plt
+from os.path import abspath
 
-dir = "C:/Users/vaclav/Downloads/GAMA_1.8.1_Windows_with_JDK/configuration/org.eclipse.osgi/196/0/.cp/models/Driving Skill/models/"
+dir = abspath("../models")
+print(dir)
 
 suffix = ["lyingfalse-priorityfalse", "lyingfalse-prioritytrue", "lyingtrue-priorityfalse", "lyingtrue-prioritytrue"]
-prefix = "results-people-seed"
+prefix = "/results-people-seed"
 max_value= 0
 
 
@@ -76,4 +78,6 @@ def analyze(seed):
     max_value = int(find_max_value(database) * 1.1)
     draw(database, seed)
 
-analyze("8.2873433844487209E18")
+analyze("3.2349512586278953E18")
+analyze("5.5180944214829394E18")
+analyze("8.8271048935955036E18")
