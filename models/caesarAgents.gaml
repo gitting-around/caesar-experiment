@@ -1,26 +1,17 @@
-/**
-* Name: caesarAgents
-* Based on the internal empty template. 
-* Author: au674354
-* Tags: 
-*/
-
-
 model caesarAgents
 
-/* Insert your model definition here */
 
 global {
 	bool in_negotiation <- false;
 	bool  display3D <- false;
 	
-	bool lying <- true;
+	bool lying <- false;
 	
-	bool priority <- false;
+	bool priority <- true;
 	
 	//Check if we use simple data or more complex roads
-	file shape_file_roads <-  file("../includes/RoadCircleLanes.shp");
-	file shape_file_nodes <- file("../includes/NodeCircleLanes.shp");
+	file shape_file_roads <- file("../includes/RoadCircleLanes_new.shp");
+	file shape_file_nodes <- file("../includes/NodeCircleLanes_new.shp");
 	geometry shape <- envelope(shape_file_roads) + 50.0;
 	graph road_network;
 	int nb_people <- 200;
@@ -31,10 +22,9 @@ global {
 	
 	bool stop <- false;
 
-	init {
-	//create the intersection and check if there are traffic lights or not by looking the values inside the type column of the shapefile and linking
-	// this column to the attribute is_traffic_signal. 
-		save ("analyze\""+seed+"\")") to: "seeds.txt" type: "text" rewrite: false;
+	init { 
+		seed <- 2.7932832505430804E18;
+		save ("analyze(\""+seed+"\")") to: "seeds.txt" type: "text" rewrite: false;
 		create intersection from: shape_file_nodes with: [is_traffic_signal::(read("type") = "traffic_signals")];
 
 		//create road agents using the shapefile and using the oneway column to check the orientation of the roads if there are directed
@@ -58,9 +48,7 @@ global {
 				match "-1" {
 					shape <- polyline(reverse(shape.points));
 				}
-
 			}
-
 		}
 
 		map general_speed_map <- road as_map (each::(each.shape.perimeter / each.maxspeed));
@@ -88,7 +76,7 @@ global {
 			max_acceleration <- 5 / 3.6;
 			speed_coeff <- 1.2 - (rnd(400) / 1000);
 			threshold_stucked <- int((1 + rnd(5)) #mn);
-			proba_breakdown <- 0.00001;
+			proba_breakdown <- 0.0;
 		}
 		
 		point inter0;
@@ -137,7 +125,7 @@ global {
 			write "calling rand";
 			*/
 			
-			ask people(0){
+			ask people(1) {
 				priority_car <- 1;
 			}
 		}/*
@@ -175,7 +163,7 @@ global {
 			
 				write "calling rand";
 			}*/
-			ask people(1){
+			ask people(0) {
 				lying_capability <- true;
 			}
 		}/*
@@ -229,9 +217,14 @@ global {
 			}
 		}
 		
-		if nr_done = nb_people{
+		
+		if cycle > 20000 {
 			stop <- true;
-			do die;
+			//do die;
+		}
+		if nr_done = nb_people{
+			//stop <- true;
+			// do die;
 		}
 		
 	}
@@ -241,7 +234,7 @@ global {
 species intersection skills: [skill_road_node] {
 	bool is_traffic_signal;
 	list<list> stop;
-	int time_to_change <- 100;
+	int time_to_change <- 200;
 	int counter <- rnd(time_to_change);
 	list<road> ways1;
 	list<road> ways2;
@@ -348,6 +341,10 @@ species intersection skills: [skill_road_node] {
 			list<people> agents_on_roads <- get_agents_on_roads();
 			do logme("", "Agents_on_roads: " + agents_on_roads);
 			
+			loop a over: agents_on_roads{
+				do logme("", "Agent: " + a.priority_car);
+			}
+			
 			
 			//get list of agents close to the intersection from agents_on_roads
 			list<people> agents_close_to_intersection <- [];
@@ -356,7 +353,7 @@ species intersection skills: [skill_road_node] {
 				
 				float distx <- sqrt((self.location.x - person.location.x)^2 + (self.location.y - person.location.y)^2);
 				do logme("", "\tperson " + person + " on road" + person.current_road + " dist: " +distx);
-				if distx <= 30.0#m and distx > 0.1#m {
+				if distx <= 60.0#m {
 					write ("Car close to intersection: " + distx);
 					
 					add person to: agents_close_to_intersection;
@@ -573,9 +570,8 @@ species people skills: [advanced_driving] {
 	reflex time_to_go when: final_target = nil{
 		time_end <- cycle;
 		
-		if !arrived and cycle > 1{
+		if  cycle > 1{
 			do log_duration("time:" + (time_end - time_start) + " priority:" + priority_car + " lying:" + lying_capability + " agent:" + name);
-			arrived <- true;
 		}
 		
 		time_start <- cycle;
@@ -675,13 +671,13 @@ species people skills: [advanced_driving] {
 
 experiment experiment_city type: gui {
 	parameter "if true, 3D display, if false 2D display:" var: display3D category: "GIS";
-	float seed <- 2.5166418704550881E18;
+	float seed <- 2.7932832505430804E18;
 	
 	action _init_{
 		create simulation with:[
-			shape_file_roads::file("../includes/RoadCircleLanes.shp"), 
-			shape_file_nodes::file("../includes/NodeCircleLanes.shp"),
-			nb_people::5
+			shape_file_roads::file("../includes/RoadCircleLanes_new.shp"), 
+			shape_file_nodes::file("../includes/NodeCircleLanes_new.shp"),
+			nb_people::8
 		];
 	}
 	output {
@@ -695,11 +691,11 @@ experiment experiment_city type: gui {
 
 }
 
-experiment batch_sim type: batch repeat: 10 keep_seed: true until: stop{
+experiment batch_sim type: batch repeat: 1 keep_seed: true until: stop {
+	
 	parameter "Lying: " var: lying among: [false, true];
 	parameter "Priority: " var: priority among: [false, true];
-	parameter "Nr of people" var: nb_people among: [5];
-	parameter "Ratio of liers in the population" var: ratio_liars among: [0.2];
+	parameter "Nr of people" var: nb_people among: [9];
+	parameter "Ratio of liers in the population" var: ratio_liars among: [0.3];
 	parameter "Prob of lying" var: lying_prob among: [1.0];
-	
 }
