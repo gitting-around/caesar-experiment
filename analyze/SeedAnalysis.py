@@ -2,7 +2,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from os.path import abspath
 
-dir = abspath("../models")
+dir = "C:/Users/vaclav/Downloads/GAMA_1.8.1_Windows_with_JDK/configuration/org.eclipse.osgi/196/0/.cp/models/Driving Skill/models/"
 print(dir)
 suffix = ["lyingfalse-priorityfalse", "lyingfalse-prioritytrue", "lyingtrue-priorityfalse", "lyingtrue-prioritytrue"]
 prefix = "/results-people-seed"
@@ -34,7 +34,7 @@ def find_max_value(database):
     return maxval
 
 def draw_sublpt(agent_detail, pos):
-    plt.subplot(1, 4, pos).set_title(suffix[pos-1].replace("-", "\n"))
+    plt.subplot(1, 4, pos).set_title(suffix[pos-1].replace("-", "/n"))
 
     x = []
     y = []
@@ -80,13 +80,3 @@ def analyze(seed):
     max_value = int(find_max_value(database) * 1.1)
     draw(database, seed)
 
-analyze("4.6909721031819141E18")
-analyze("1.10441269156120474E18")
-analyze("1.89273063607049933E18")
-analyze("6.6636521130827715E18")
-analyze("8.179797083159682E18")
-analyze("7.2483655322411397E18")
-analyze("5.6791672970601011E18")
-analyze("8.00503776227328E18")
-analyze("5.1777259081201316E18")
-analyze("8.1219141691279565E18")
