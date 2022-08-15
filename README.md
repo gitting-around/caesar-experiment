@@ -11,8 +11,7 @@ To execute the experiment, you will need the following:
   - Choose the imported model (caesarAgents.yaml)
   - Click on Start Experiment
   - Wait till the end of the experiment
-- Analyze the experimental results with python code (directory: analyze)
-  -  
+- Analyze the experimental results with python code (directory: analyze)  
 
 
 
