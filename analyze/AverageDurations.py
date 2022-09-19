@@ -119,8 +119,7 @@ def plot_average(results, agents_data, title, pos):
             , "", "", title, 150, pos)
 
 suffix = ["lyingfalse-priorityfalse", "lyingfalse-prioritytrue", "lyingtrue-priorityfalse", "lyingtrue-prioritytrue"]
-#suffix = ["lyingfalse-priorityfalse"]
-path = "C:/Users/vaclav/Downloads/GAMA_1.8.1_Windows_with_JDK/configuration/org.eclipse.osgi/196/0/.cp/models/Driving Skill/models/"
+path = "experiments/"
 seed = "2.7932832505430804E18"
 experiment_suffix = "nb_people5-time_to_change1000"
 
@@ -132,6 +131,4 @@ for i, mode in enumerate(suffix):
 
     plot_average(results_baseline, agents_data, "", i+1)
 
-# plt.savefig(f"average-res-{seed}-{experiment_suffix}.png")
 plt.savefig(f"new_average-res-{seed}.png")
-    #plot_max(results_baseline, f"max-{filename}.png")
