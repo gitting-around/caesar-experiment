@@ -10,8 +10,8 @@ global {
 	bool priority <- true;
 	
 	//Check if we use simple data or more complex roads
-	file shape_file_roads <- file("../includes/RoadCircleLanes_new.shp");
-	file shape_file_nodes <- file("../includes/NodeCircleLanes_new.shp");
+	file shape_file_roads <- file("../map/RoadCircleLanes_new.shp");
+	file shape_file_nodes <- file("../map/NodeCircleLanes_new.shp");
 	geometry shape <- envelope(shape_file_roads) + 50.0;
 	graph road_network;
 	int nb_people <- 200;
@@ -24,17 +24,17 @@ global {
 
 	init { 
 		seed <- 2.7932832505430804E18;
-		save ("analyze(\""+seed+"\")") to: "seeds.txt" type: "text" rewrite: false;
+		save ("analyze(\""+seed+"\")") to: "seeds.txt" format: "text" rewrite: false;
 		create intersection from: shape_file_nodes with: [is_traffic_signal::(read("type") = "traffic_signals")];
 
 		//create road agents using the shapefile and using the oneway column to check the orientation of the roads if there are directed
-		create road from: shape_file_roads with: [lanes::int(read("lanes")), oneway::string(read("oneway"))] {
-			geom_display <- shape + (2.5 * lanes);
-			maxspeed <- (lanes = 1 ? 30.0 : (lanes = 2 ? 50.0 : 70.0)) °km / °h;
+		create road from: shape_file_roads with: [num_lanes::int(read("lanes")), oneway::string(read("oneway"))] {
+			geom_display <- shape + (2.5 * num_lanes);
+			maxspeed <- (num_lanes = 1 ? 30.0 : (num_lanes = 2 ? 50.0 : 70.0)) #km / #h;
 			switch oneway {
 				match "no" {
 					create road {
-						lanes <- max([1, int(myself.lanes / 2.0)]);
+						num_lanes <- max([1, int(myself.num_lanes / 2.0)]);
 						shape <- polyline(reverse(myself.shape.points));
 						maxspeed <- myself.maxspeed;
 						geom_display <- myself.geom_display;
@@ -42,7 +42,7 @@ global {
 						myself.linked_road <- self;
 					}
 
-					lanes <- int(lanes / 2.0 + 0.5);
+					num_lanes <- int(num_lanes / 2.0 + 0.5);
 				}
 
 				match "-1" {
@@ -231,7 +231,7 @@ global {
 }
 
 //species that will represent the intersection node, it can be traffic lights or not, using the skill_road_node skill
-species intersection skills: [skill_road_node] {
+species intersection skills: [intersection_skill] {
 	bool is_traffic_signal;
 	list<list> stop;
 	int time_to_change <- 200;
@@ -300,7 +300,7 @@ species intersection skills: [skill_road_node] {
 		 string msg <- prefix + ": "+ txt;
 		 write(msg);
 		 save ("" + cycle + msg) 
-      	 to: "results.txt" type: "text" rewrite: false;
+      	 to: "results.txt" format: "text" rewrite: false;
 	}
 	
 	
@@ -520,7 +520,7 @@ species intersection skills: [skill_road_node] {
 }
 
 //species that will represent the roads, it can be directed or not and uses the skill skill_road
-species road skills: [skill_road] {
+species road skills: [road_skill] {
 	geometry geom_display;
 	string oneway;
 
@@ -534,7 +534,7 @@ species road skills: [skill_road] {
 }
 
 //People species that will move on the graph of roads to a target and using the driving skill
-species people skills: [advanced_driving] {
+species people skills: [driving] {
 	rgb color <- #grey;
 	rgb default_color <- color;
 	int counter_stucked <- 0;
@@ -558,7 +558,7 @@ species people skills: [advanced_driving] {
 		 write(msg);
 		 save ("" + msg) 
 
-      	 to: "results-people-seed"+seed+"-lying"+lying +"-priority"+priority+".txt" type: "text" rewrite: false;
+      	 to: "results-people-seed"+seed+"-lying"+lying +"-priority"+priority+".txt" format: "text" rewrite: false;
 
 	}
 	
@@ -657,7 +657,7 @@ species people skills: [advanced_driving] {
 		if (current_road = nil) {
 			return location;
 		} else {
-			float val <- (road(current_road).lanes - current_lane) + 0.5;
+			float val <- (road(current_road).num_lanes - current_lane) + 0.5;
 			val <- on_linked_road ? -val : val;
 			if (val = 0) {
 				return location;
@@ -675,8 +675,8 @@ experiment experiment_city type: gui {
 	
 	action _init_{
 		create simulation with:[
-			shape_file_roads::file("../includes/RoadCircleLanes_new.shp"), 
-			shape_file_nodes::file("../includes/NodeCircleLanes_new.shp"),
+			shape_file_roads::file("../map/RoadCircleLanes_new.shp"), 
+			shape_file_nodes::file("../map/NodeCircleLanes_new.shp"),
 			nb_people::8
 		];
 	}
@@ -686,7 +686,7 @@ experiment experiment_city type: gui {
 			species intersection ;
 			species people ;
 		}
-		monitor "Nr of negotiations" value: number_of_negotiations refresh_every: 5;  
+		monitor "Nr of negotiations" value: number_of_negotiations refresh: every(5#cycle);  
 	}
 
 }
